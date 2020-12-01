@@ -2,7 +2,9 @@ import 'package:conversor_moedas/modules/components/cardInfoCurrency.dart';
 import 'package:conversor_moedas/modules/components/equalsIcon.dart';
 import 'package:conversor_moedas/modules/components/inputCurrency.dart';
 import 'package:conversor_moedas/modules/components/update.dart';
+import 'package:conversor_moedas/modules/list_currency.dart';
 import 'package:conversor_moedas/repositories/currency.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -41,8 +43,13 @@ class _ConvertePageState extends State<ConvertePage> {
   }
 
   Future<void> _openListCurrency(cardCurrency, value) async {
-    print(cardCurrency);
-    print(value);
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (context) => ListCurrency(
+          cardCurrency: cardCurrency,
+        ),
+      ),
+    );
   }
 
   Future<void> _converteCurrency(String inputCurrency, int amount, bool invertedCurrency) async {
@@ -80,7 +87,8 @@ class _ConvertePageState extends State<ConvertePage> {
                       ),
                       SizedBox(height: size.height * 0.04),
                       CardInfoCurrency(
-                        currency: 'USD',
+                        currency: storeApp.currencyOne,
+                        currencyName: storeApp.currencyNameOne,
                         press: (value) {
                           _openListCurrency('currencyOne', value);
                         },
@@ -93,7 +101,8 @@ class _ConvertePageState extends State<ConvertePage> {
                       ),
                       EqualsIcon(),
                       CardInfoCurrency(
-                        currency: 'BRL',
+                        currency: storeApp.currencyTwo,
+                        currencyName: storeApp.currencyNameTwo,
                         press: (value) {
                           _openListCurrency('currencyTwo', value);
                         },

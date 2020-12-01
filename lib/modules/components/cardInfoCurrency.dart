@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class CardInfoCurrency extends StatelessWidget {
   final String currency;
+  final String currencyName;
   final void Function(String) press;
 
   const CardInfoCurrency({
     Key key,
     @required this.currency,
+    this.currencyName,
     this.press,
   }) : super(key: key);
 
@@ -31,7 +33,7 @@ class CardInfoCurrency extends StatelessWidget {
             maxLines: 1,
           ),
           subtitle: Text(
-            'moeda',
+            currencyName,
             overflow: TextOverflow.fade,
             softWrap: false,
             maxLines: 1,

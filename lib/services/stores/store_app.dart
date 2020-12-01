@@ -40,4 +40,34 @@ abstract class _StoreAppBase with Store {
       updateListCurrency = false;
     }
   }
+
+  @observable
+  String currencyOne = 'USD';
+
+  @action
+  void setCurrencyOne(String value) => currencyOne = value;
+
+  @observable
+  String currencyNameOne = 'United States Dollar';
+
+  @action
+  void setCurrencyNameOne(String value) => currencyNameOne = value;
+
+  @observable
+  String currencyTwo = 'BRL';
+
+  @action
+  void setCurrencyTwo(String value) => currencyTwo = value;
+
+  @observable
+  String currencyNameTwo = 'Brazilian Real';
+
+  @action
+  void setCurrencyNameTwo(String value) => currencyNameTwo = value;
+
+  @observable
+  bool inverted = false;
+
+  @action
+  void setInverted(bool value) => inverted = value;
 }
