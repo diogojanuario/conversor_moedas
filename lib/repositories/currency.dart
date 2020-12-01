@@ -4,10 +4,19 @@ import 'dart:io';
 import 'package:conversor_moedas/app/toast.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:conversor_moedas/enviroment/env.dart';
 
 class Currency {
-  Future<Map<String, dynamic>> getListCurrency(String codeCurrency) async {
-    String apiUrl = "https://api.exchangeratesapi.io/latest";
+  Future<Map<String, dynamic>> getListCurrency(String codeCurrency, bool isUpdate) async {
+    String apiUrl = Env.api;
+
+    if (!isUpdate) {
+      Map rates = await getListCurrencyCache(codeCurrency);
+
+      if (rates != null) {
+        return rates;
+      }
+    }
 
     try {
       Response response = await get('$apiUrl/?base=$codeCurrency');
@@ -28,7 +37,7 @@ class Currency {
   }
 
   Future<Map<String, dynamic>> updateListCurrency() async {
-    String apiUrl = "https://api.exchangeratesapi.io/latest";
+    String apiUrl = Env.api;
 
     try {
       Response response = await get('$apiUrl');
@@ -38,11 +47,9 @@ class Currency {
       await setDateStoreCache(data['date']);
 
       for (var entry in data['rates'].entries) {
-        Map<String, dynamic> ratesByCurrency = await getListCurrency(entry.key);
+        Map<String, dynamic> ratesByCurrency = await getListCurrency(entry.key, true);
         await setCurrenciesListStoreCache(entry.key, ratesByCurrency);
       }
-
-      print('atualizado!');
 
       return {};
     } on SocketException {
@@ -65,5 +72,24 @@ class Currency {
     Map<String, dynamic> cachedData = {'rates': rates};
 
     prefs.setString(currency, json.encode(cachedData));
+  }
+
+  Future<Map<String, dynamic>> getListCurrencyCache(String currency) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    try {
+      String cachedData = prefs.getString(currency);
+
+      if (cachedData == null) {
+        return null;
+      }
+
+      Map cache = json.decode(cachedData);
+
+      return cache['rates'];
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 }

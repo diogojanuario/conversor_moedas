@@ -1,10 +1,12 @@
-import 'package:conversor_moedas/app/utils.dart';
 import 'package:conversor_moedas/modules/components/cardInfoCurrency.dart';
 import 'package:conversor_moedas/modules/components/equalsIcon.dart';
 import 'package:conversor_moedas/modules/components/inputCurrency.dart';
 import 'package:conversor_moedas/modules/components/update.dart';
 import 'package:conversor_moedas/repositories/currency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
+import 'package:conversor_moedas/services/stores/store_app.dart';
 
 class ConvertePage extends StatefulWidget {
   ConvertePage({Key key}) : super(key: key);
@@ -14,8 +16,7 @@ class ConvertePage extends StatefulWidget {
 }
 
 class _ConvertePageState extends State<ConvertePage> {
-  DateTime updateTime = DateTime.now();
-  String updateTimeFormated = '';
+  StoreApp storeApp = GetIt.I<StoreApp>();
 
   @override
   void initState() {
@@ -24,13 +25,19 @@ class _ConvertePageState extends State<ConvertePage> {
   }
 
   Future<void> _prepareModule() async {
-    String tempUpdateTime = DateTime.now().toString();
-    updateTime = (DateTime.parse(tempUpdateTime));
-    updateTimeFormated = dateBrFormated(updateTime.toString());
+    await storeApp.setUpdateDate();
+    await storeApp.setUpdateListCurrency();
+
+    if (storeApp.updateListCurrency) {
+      _updateCurrenciesApi();
+    }
   }
 
   Future<void> _updateCurrenciesApi() async {
+    storeApp.loadingApp(true);
     await Currency().updateListCurrency();
+    await storeApp.setUpdateDate();
+    storeApp.loadingApp(false);
   }
 
   Future<void> _openListCurrency(cardCurrency, value) async {
@@ -50,42 +57,56 @@ class _ConvertePageState extends State<ConvertePage> {
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Update(
-                infoDate: updateTimeFormated,
-                press: () {
-                  _updateCurrenciesApi();
-                },
-              ),
-              SizedBox(height: size.height * 0.04),
-              CardInfoCurrency(
-                currency: 'USD',
-                press: (value) {
-                  _openListCurrency('currencyOne', value);
-                },
-              ),
-              InputCurrency(
-                inputCurrency: 'currencyOne',
-                press: (inputCurrency, amount, invertedCurrency) {
-                  _converteCurrency(inputCurrency, amount, invertedCurrency);
-                },
-              ),
-              EqualsIcon(),
-              CardInfoCurrency(
-                currency: 'BRL',
-                press: (value) {
-                  _openListCurrency('currencyTwo', value);
-                },
-              ),
-              InputCurrency(
-                inputCurrency: 'currencyTwo',
-                press: (inputCurrency, amount, invertedCurrency) {
-                  _converteCurrency(inputCurrency, amount, invertedCurrency);
-                },
-              ),
-            ],
-          ),
+          child: Observer(builder: (_) {
+            return storeApp.loading
+                ? Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(
+                          Colors.blue,
+                        ),
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      Update(
+                        infoDate: storeApp.updateDate,
+                        updatedAvaliable: storeApp.updateListCurrency,
+                        press: () {
+                          _updateCurrenciesApi();
+                        },
+                      ),
+                      SizedBox(height: size.height * 0.04),
+                      CardInfoCurrency(
+                        currency: 'USD',
+                        press: (value) {
+                          _openListCurrency('currencyOne', value);
+                        },
+                      ),
+                      InputCurrency(
+                        inputCurrency: 'currencyOne',
+                        press: (inputCurrency, amount, invertedCurrency) {
+                          _converteCurrency(inputCurrency, amount, invertedCurrency);
+                        },
+                      ),
+                      EqualsIcon(),
+                      CardInfoCurrency(
+                        currency: 'BRL',
+                        press: (value) {
+                          _openListCurrency('currencyTwo', value);
+                        },
+                      ),
+                      InputCurrency(
+                        inputCurrency: 'currencyTwo',
+                        press: (inputCurrency, amount, invertedCurrency) {
+                          _converteCurrency(inputCurrency, amount, invertedCurrency);
+                        },
+                      ),
+                    ],
+                  );
+          }),
         ),
       ),
     );
