@@ -3,6 +3,7 @@ import 'package:conversor_moedas/modules/components/cardInfoCurrency.dart';
 import 'package:conversor_moedas/modules/components/equalsIcon.dart';
 import 'package:conversor_moedas/modules/components/inputCurrency.dart';
 import 'package:conversor_moedas/modules/components/update.dart';
+import 'package:conversor_moedas/repositories/currency.dart';
 import 'package:flutter/material.dart';
 
 class ConvertePage extends StatefulWidget {
@@ -28,8 +29,8 @@ class _ConvertePageState extends State<ConvertePage> {
     updateTimeFormated = dateBrFormated(updateTime.toString());
   }
 
-  Future<void> _getCurrenciesApi() async {
-    print('Buscar dados api');
+  Future<void> _updateCurrenciesApi() async {
+    await Currency().updateListCurrency();
   }
 
   Future<void> _openListCurrency(cardCurrency, value) async {
@@ -54,7 +55,7 @@ class _ConvertePageState extends State<ConvertePage> {
               Update(
                 infoDate: updateTimeFormated,
                 press: () {
-                  _getCurrenciesApi();
+                  _updateCurrenciesApi();
                 },
               ),
               SizedBox(height: size.height * 0.04),

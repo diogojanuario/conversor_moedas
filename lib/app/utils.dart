@@ -6,6 +6,14 @@ bool isNullNumber(num number) {
   return number == null;
 }
 
+bool isNullOrEmptyList(List list) {
+  return list == null || list.isEmpty;
+}
+
+bool isNullOrEmptyMap(Map map) {
+  return map == null || map.isEmpty;
+}
+
 String dateBrFormated(dateEua) {
   String dateVanila = dateEua.replaceAll(new RegExp(r'[^\w\s]+'), '');
   String _dateFormated =
