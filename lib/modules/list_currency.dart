@@ -1,4 +1,5 @@
 import 'package:conversor_moedas/app/name_currency.dart';
+import 'package:conversor_moedas/modules/converter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:conversor_moedas/services/stores/store_app.dart';
@@ -77,9 +78,11 @@ class _ListCurrencyState extends State<ListCurrency> {
         if (widget.cardCurrency == 'currencyOne') {
           storeApp.setCurrencyOne(newCurrencyCode);
           storeApp.setCurrencyNameOne(newCurrencyName);
+          Converter().calculateConverter(widget.cardCurrency, storeApp.amount, false);
         } else {
           storeApp.setCurrencyTwo(newCurrencyCode);
           storeApp.setCurrencyNameTwo(newCurrencyName);
+          Converter().calculateConverter(widget.cardCurrency, storeApp.valueConverted, true);
         }
         Navigator.pop(context);
       },

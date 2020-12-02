@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
+import 'package:conversor_moedas/services/stores/store_app.dart';
 
-class Update extends StatelessWidget {
-  final bool updatedAvaliable;
-  final String infoDate;
+class Update extends StatefulWidget {
   final void Function() press;
 
   const Update({
     Key key,
-    this.updatedAvaliable,
-    @required this.infoDate,
     this.press,
   }) : super(key: key);
 
   @override
+  _UpdateState createState() => _UpdateState();
+}
+
+class _UpdateState extends State<Update> {
+  StoreApp storeApp = GetIt.I<StoreApp>();
+  @override
   Widget build(BuildContext context) {
-    return Container(
+    return Observer(builder: (_) {
+      return Container(
         padding: EdgeInsets.only(left: 15, right: 15),
         color: Color(0xFF4A84FF),
         child: Row(
@@ -28,16 +34,16 @@ class Update extends StatelessWidget {
                       fontSize: 15,
                     )),
                 Text(
-                  infoDate,
+                  storeApp.updateDate,
                   style: TextStyle(color: Colors.white, fontSize: 13),
                 )
               ],
             ),
             Spacer(),
-            updatedAvaliable
+            storeApp.updateListCurrency
                 ? RaisedButton(
                     padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                    onPressed: press,
+                    onPressed: widget.press,
                     color: Colors.white,
                     child: const Text(
                       'Atualizar',
@@ -49,15 +55,26 @@ class Update extends StatelessWidget {
                       ),
                     ),
                   )
-                : Container(
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                    child: Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.grey[300],
-                      size: 40,
-                    ),
-                  ),
+                : storeApp.updateDate.isEmpty
+                    ? Container(
+                        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                        child: Icon(
+                          Icons.wifi_off,
+                          color: Colors.grey[300],
+                          size: 40,
+                        ),
+                      )
+                    : Container(
+                        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                        child: Icon(
+                          Icons.check_circle_outline,
+                          color: Colors.grey[300],
+                          size: 40,
+                        ),
+                      ),
           ],
-        ));
+        ),
+      );
+    });
   }
 }

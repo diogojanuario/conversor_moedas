@@ -24,6 +24,21 @@ mixin _$StoreApp on _StoreAppBase, Store {
     });
   }
 
+  final _$lastDateAvaliableAtom = Atom(name: '_StoreAppBase.lastDateAvaliable');
+
+  @override
+  String get lastDateAvaliable {
+    _$lastDateAvaliableAtom.reportRead();
+    return super.lastDateAvaliable;
+  }
+
+  @override
+  set lastDateAvaliable(String value) {
+    _$lastDateAvaliableAtom.reportWrite(value, super.lastDateAvaliable, () {
+      super.lastDateAvaliable = value;
+    });
+  }
+
   final _$updateListCurrencyAtom =
       Atom(name: '_StoreAppBase.updateListCurrency');
 
@@ -115,6 +130,36 @@ mixin _$StoreApp on _StoreAppBase, Store {
     });
   }
 
+  final _$amountAtom = Atom(name: '_StoreAppBase.amount');
+
+  @override
+  double get amount {
+    _$amountAtom.reportRead();
+    return super.amount;
+  }
+
+  @override
+  set amount(double value) {
+    _$amountAtom.reportWrite(value, super.amount, () {
+      super.amount = value;
+    });
+  }
+
+  final _$valueConvertedAtom = Atom(name: '_StoreAppBase.valueConverted');
+
+  @override
+  double get valueConverted {
+    _$valueConvertedAtom.reportRead();
+    return super.valueConverted;
+  }
+
+  @override
+  set valueConverted(double value) {
+    _$valueConvertedAtom.reportWrite(value, super.valueConverted, () {
+      super.valueConverted = value;
+    });
+  }
+
   final _$invertedAtom = Atom(name: '_StoreAppBase.inverted');
 
   @override
@@ -141,6 +186,15 @@ mixin _$StoreApp on _StoreAppBase, Store {
   @override
   Future<void> loadingApp(bool value) {
     return _$loadingAppAsyncAction.run(() => super.loadingApp(value));
+  }
+
+  final _$setLastDateAvaliableAsyncAction =
+      AsyncAction('_StoreAppBase.setLastDateAvaliable');
+
+  @override
+  Future<void> setLastDateAvaliable(dynamic value) {
+    return _$setLastDateAvaliableAsyncAction
+        .run(() => super.setLastDateAvaliable(value));
   }
 
   final _$setUpdateDateAsyncAction = AsyncAction('_StoreAppBase.setUpdateDate');
@@ -198,6 +252,28 @@ mixin _$StoreApp on _StoreAppBase, Store {
   }
 
   @override
+  void setAmount(double value) {
+    final _$actionInfo = _$_StoreAppBaseActionController.startAction(
+        name: '_StoreAppBase.setAmount');
+    try {
+      return super.setAmount(value);
+    } finally {
+      _$_StoreAppBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setValueConverted(double value) {
+    final _$actionInfo = _$_StoreAppBaseActionController.startAction(
+        name: '_StoreAppBase.setValueConverted');
+    try {
+      return super.setValueConverted(value);
+    } finally {
+      _$_StoreAppBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setInverted(bool value) {
     final _$actionInfo = _$_StoreAppBaseActionController.startAction(
         name: '_StoreAppBase.setInverted');
@@ -212,12 +288,15 @@ mixin _$StoreApp on _StoreAppBase, Store {
   String toString() {
     return '''
 loading: ${loading},
+lastDateAvaliable: ${lastDateAvaliable},
 updateListCurrency: ${updateListCurrency},
 updateDate: ${updateDate},
 currencyOne: ${currencyOne},
 currencyNameOne: ${currencyNameOne},
 currencyTwo: ${currencyTwo},
 currencyNameTwo: ${currencyNameTwo},
+amount: ${amount},
+valueConverted: ${valueConverted},
 inverted: ${inverted}
     ''';
   }

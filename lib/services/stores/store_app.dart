@@ -15,6 +15,14 @@ abstract class _StoreAppBase with Store {
   }
 
   @observable
+  String lastDateAvaliable;
+
+  @action
+  Future<void> setLastDateAvaliable(value) async {
+    lastDateAvaliable = value;
+  }
+
+  @observable
   bool updateListCurrency = false;
 
   @observable
@@ -25,16 +33,14 @@ abstract class _StoreAppBase with Store {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String dateCached = prefs.getString('dateUpdated');
 
-    updateDate = dateBrFormated(dateCached.toString());
+    if (!isNull(dateCached)) {
+      updateDate = dateBrFormated(dateCached.toString());
+    }
   }
 
   @observable
   Future<void> setUpdateListCurrency() async {
-    String timeNow = DateTime.now().toString().substring(0, 10);
-
-    timeNow = dateBrFormated(timeNow.toString());
-
-    if (timeNow != updateDate) {
+    if (updateDate != lastDateAvaliable) {
       updateListCurrency = true;
     } else {
       updateListCurrency = false;
@@ -64,6 +70,18 @@ abstract class _StoreAppBase with Store {
 
   @action
   void setCurrencyNameTwo(String value) => currencyNameTwo = value;
+
+  @observable
+  double amount = 0.0;
+
+  @action
+  void setAmount(double value) => amount = value;
+
+  @observable
+  double valueConverted = 0.0;
+
+  @action
+  void setValueConverted(double value) => valueConverted = value;
 
   @observable
   bool inverted = false;

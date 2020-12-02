@@ -1,9 +1,12 @@
 import 'package:conversor_moedas/modules/components/cardInfoCurrency.dart';
+import 'package:conversor_moedas/modules/converter.dart';
 import 'package:conversor_moedas/modules/components/equalsIcon.dart';
-import 'package:conversor_moedas/modules/components/inputCurrency.dart';
+import 'package:conversor_moedas/modules/components/input_currency_one.dart';
+import 'package:conversor_moedas/modules/components/input_currency_two.dart';
 import 'package:conversor_moedas/modules/components/update.dart';
 import 'package:conversor_moedas/modules/list_currency.dart';
 import 'package:conversor_moedas/repositories/currency.dart';
+import 'package:conversor_moedas/app/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -23,39 +26,48 @@ class _ConvertePageState extends State<ConvertePage> {
   @override
   void initState() {
     super.initState();
-    _prepareModule();
+    _setUpdateState();
   }
 
-  Future<void> _prepareModule() async {
+  Future<void> _setUpdateState() async {
     await storeApp.setUpdateDate();
+
+    String lastDateAvaliable = await Currency().lastDateAvaliable();
+
+    if (lastDateAvaliable.isEmpty) {
+      // await storeApp.setLastDateAvaliable(storeApp.updateDate);
+      return;
+    } else {
+      await storeApp.setLastDateAvaliable(dateBrFormated(lastDateAvaliable));
+    }
+
     await storeApp.setUpdateListCurrency();
 
-    if (storeApp.updateListCurrency) {
-      _updateCurrenciesApi();
+    if (storeApp.updateListCurrency && lastDateAvaliable.isNotEmpty) {
+      await storeApp.setUpdateDate();
+
+      String lastDateAvaliable = await Currency().lastDateAvaliable();
+      await storeApp.setLastDateAvaliable(dateBrFormated(lastDateAvaliable));
+      await storeApp.setUpdateListCurrency();
     }
   }
 
   Future<void> _updateCurrenciesApi() async {
     storeApp.loadingApp(true);
     await Currency().updateListCurrency();
-    await storeApp.setUpdateDate();
+    // await storeApp.setUpdateDate();
+    await _setUpdateState();
     storeApp.loadingApp(false);
   }
 
   Future<void> _openListCurrency(cardCurrency, value) async {
-    Navigator.of(context).push(
+    await Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => ListCurrency(
           cardCurrency: cardCurrency,
         ),
       ),
     );
-  }
-
-  Future<void> _converteCurrency(String inputCurrency, int amount, bool invertedCurrency) async {
-    print(inputCurrency);
-    print(amount);
-    print(invertedCurrency);
   }
 
   @override
@@ -79,8 +91,6 @@ class _ConvertePageState extends State<ConvertePage> {
                 : Column(
                     children: [
                       Update(
-                        infoDate: storeApp.updateDate,
-                        updatedAvaliable: storeApp.updateListCurrency,
                         press: () {
                           _updateCurrenciesApi();
                         },
@@ -96,7 +106,7 @@ class _ConvertePageState extends State<ConvertePage> {
                       InputCurrency(
                         inputCurrency: 'currencyOne',
                         press: (inputCurrency, amount, invertedCurrency) {
-                          _converteCurrency(inputCurrency, amount, invertedCurrency);
+                          Converter().calculateConverter(inputCurrency, amount, invertedCurrency);
                         },
                       ),
                       EqualsIcon(),
@@ -107,10 +117,10 @@ class _ConvertePageState extends State<ConvertePage> {
                           _openListCurrency('currencyTwo', value);
                         },
                       ),
-                      InputCurrency(
+                      InputCurrencyTwo(
                         inputCurrency: 'currencyTwo',
                         press: (inputCurrency, amount, invertedCurrency) {
-                          _converteCurrency(inputCurrency, amount, invertedCurrency);
+                          Converter().calculateConverter(inputCurrency, amount, invertedCurrency);
                         },
                       ),
                     ],

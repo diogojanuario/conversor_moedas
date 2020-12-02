@@ -61,6 +61,22 @@ class Currency {
     }
   }
 
+  Future<String> lastDateAvaliable() async {
+    String apiUrl = Env.api;
+
+    try {
+      Response response = await get('$apiUrl');
+
+      Map data = json.decode(response.body);
+
+      return data['date'].toString();
+    } on SocketException {
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   Future setDateStoreCache(String date) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('dateUpdated', date);
@@ -72,6 +88,11 @@ class Currency {
     Map<String, dynamic> cachedData = {'rates': rates};
 
     prefs.setString(currency, json.encode(cachedData));
+  }
+
+  Future deleteCache() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 
   Future<Map<String, dynamic>> getListCurrencyCache(String currency) async {
